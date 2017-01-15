@@ -9,6 +9,7 @@ To use these scripts, make sure you have python3 installed.
 This is the main script that will recursively search a given directory, try to recognize all TV Shows and copy or move the files into a new directory structure as required by plex. Next to TV Shows, it will also find subtitles in the same directory or a 'Subs' directory given they start with the same name as the media file.
 
 The options for the script are:
+
 | option | long name | description |
 | --- | --- | --- |
 | -i <dir> | --input <dir> | Input directory that will be scanned recursively
