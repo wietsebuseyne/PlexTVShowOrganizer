@@ -128,6 +128,24 @@ def main():
 		settings = json.load(json_data)
 		settings['subtitle_regex'] = "(" + '|'.join(settings['subtitle_extensions']) + ")"
 
-	print(filename_to_serie("The Office [1.01] Pilot.avi"))
+	for dirname, dirnames, filenames in os.walk(args.input):
+		for filename in filenames:
+			original_path = os.path.join(dirname, filename)
+			if is_video(original_path):
+			#fileInfo = MediaInfo.parse(original_path)
+			#for track in fileInfo.tracks:
+			#	if track.track_type == "Video":
+				videos_total += 1
+				serie = filename_to_serie(filename, args.names)
+				if not serie is None:
+					move_file(serie, original_path, args.output, not args.move)
+					series_found += 1
+				else:
+					unrecognized_files.append(filename)
+				break
+	print('\nOrganizing media library finished.')
+	print('Total video files encountered:	' + str(videos_total))
+	print('TV-shows found and moved:		' + str(series_found))
+	print('Unrecognized video files:		' + str(unrecognized_files))
 
 if __name__ == "__main__": main()
