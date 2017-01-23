@@ -129,9 +129,11 @@ def main():
 		settings['subtitle_regex'] = "(" + '|'.join(settings['subtitle_extensions']) + ")"
 
 	for dirname, dirnames, filenames in os.walk(args.input):
+		filenames = [f for f in filenames if not f[0] == '.']
+		dirnames[:] = [d for d in dirnames if not d[0] == '.']
 		for filename in filenames:
 			original_path = os.path.join(dirname, filename)
-			if not dirname.startswith(".") and is_video(original_path):
+			if is_video(original_path):
 			#fileInfo = MediaInfo.parse(original_path)
 			#for track in fileInfo.tracks:
 			#	if track.track_type == "Video":
