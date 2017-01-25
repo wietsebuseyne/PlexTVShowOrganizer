@@ -126,8 +126,9 @@ def main():
 	movies_found = 0
 	unrecognized_files = []
 
-	
-	with open('settings.json') as json_data:
+	__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+	settings_file = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname('settings.json')))
+	with open(os.path.join(__location__, 'settings.json')) as json_data:
 		settings = json.load(json_data)
 		settings['subtitle_regex'] = "(" + '|'.join(settings['subtitle_extensions']) + ")"
 
@@ -153,7 +154,7 @@ def main():
 				print('Skipping, no video file')
 	print('\nOrganizing media library finished.')
 	print('Total video files encountered:	' + str(videos_total))
-	print('TV-shows found and moved:		' + str(series_found))
+	print('TV-show found:					' + str(series_found))
 	print('Unrecognized video files:		' + str(unrecognized_files))
 
 if __name__ == "__main__": main()
