@@ -59,47 +59,50 @@ def move_file(serie, original_path, output_directory, copy_files = True):
 		os.makedirs(new_filepath)
 	new_file = new_filepath + '/' + serie_to_str(serie) + os.path.splitext(original_path)[1];
 	
-	print()
-	print(move_string + ' \n\t' + original_path + "\nto\n\t" + new_file)
-
-	if copy_files:
-		copy2(original_path, new_file)
+	if os.path.isfile(new_file):
+		print('Skipping, already exists')
 	else:
-		move(original_path, new_file)
+		print()
+		print(move_string + ' \n\t' + original_path + "\nto\n\t" + new_file)
 
-	sub_path = os.path.basename(os.path.splitext(original_path)[0])
-
-	sub_regex = re.escape(sub_path.strip(r'.\/')) + '(.*)\.' + settings['subtitle_regex'] + '$'
-
-	sub_pattern = re.compile(sub_regex)
-
-	subs = [f for f in os.listdir(os.path.dirname(original_path)) if re.search(sub_regex, f)]
-
-	subs2 = []
-	subsDir = os.path.dirname(original_path) + '/Subs'
-	if os.path.exists(subsDir):
-		subs2 = [f for f in os.listdir(subsDir) if re.search(sub_regex, f)]
-
-	for sub_file in subs:
-		m = sub_pattern.match(sub_file)
-		print(move_string + ' subtitle for ' + serie_to_str(serie))
-		new_file = new_filepath + '/' + serie_to_str(serie) + '.' + m.group(1).strip('._-[]') + m.group(2)
-		old_file = os.path.dirname(original_path) + '/' + sub_file
 		if copy_files:
-			copy2(old_file, new_file)
+			copy2(original_path, new_file)
 		else:
-			move(old_file, new_file)
+			move(original_path, new_file)
 
-	#Files in subs directory
-	for sub_file in subs2:
-		m = sub_pattern.match(sub_file)
-		print(move_string + ' subtitle for ' + serie_to_str(serie))
-		new_file = new_filepath + '/' + serie_to_str(serie) + '.' + m.group(1).strip('._-[]') + m.group(2)
-		old_file = os.path.dirname(original_path) + '/Subs/' + sub_file
-		if copy_files:
-			copy2(old_file, new_file)
-		else:
-			move(old_file, new_file)
+		sub_path = os.path.basename(os.path.splitext(original_path)[0])
+
+		sub_regex = re.escape(sub_path.strip(r'.\/')) + '(.*)\.' + settings['subtitle_regex'] + '$'
+
+		sub_pattern = re.compile(sub_regex)
+
+		subs = [f for f in os.listdir(os.path.dirname(original_path)) if re.search(sub_regex, f)]
+
+		subs2 = []
+		subsDir = os.path.dirname(original_path) + '/Subs'
+		if os.path.exists(subsDir):
+			subs2 = [f for f in os.listdir(subsDir) if re.search(sub_regex, f)]
+
+		for sub_file in subs:
+			m = sub_pattern.match(sub_file)
+			print(move_string + ' subtitle for ' + serie_to_str(serie))
+			new_file = new_filepath + '/' + serie_to_str(serie) + '.' + m.group(1).strip('._-[]') + m.group(2)
+			old_file = os.path.dirname(original_path) + '/' + sub_file
+			if copy_files:
+				copy2(old_file, new_file)
+			else:
+				move(old_file, new_file)
+
+		#Files in subs directory
+		for sub_file in subs2:
+			m = sub_pattern.match(sub_file)
+			print(move_string + ' subtitle for ' + serie_to_str(serie))
+			new_file = new_filepath + '/' + serie_to_str(serie) + '.' + m.group(1).strip('._-[]') + m.group(2)
+			old_file = os.path.dirname(original_path) + '/Subs/' + sub_file
+			if copy_files:
+				copy2(old_file, new_file)
+			else:
+				move(old_file, new_file)
 
 def name_replacement(s):
 	try:
@@ -127,8 +130,9 @@ def main():
 	movies_found = 0
 	unrecognized_files = []
 
-	
-	with open('settings.json') as json_data:
+	__location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
+	settings_file = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname('settings.json')))
+	with open(os.path.join(__location__, 'settings.json')) as json_data:
 		settings = json.load(json_data)
 		settings['subtitle_regex'] = "(" + '|'.join(settings['subtitle_extensions']) + ")"
 
@@ -137,6 +141,8 @@ def main():
 		dirnames[:] = [d for d in dirnames if not d[0] == '.']
 		for filename in filenames:
 			original_path = os.path.join(dirname, filename)
+			print()
+			print("Analyzing " + filename)
 			if is_video(original_path):
 			#fileInfo = MediaInfo.parse(original_path)
 			#for track in fileInfo.tracks:
@@ -148,9 +154,11 @@ def main():
 					series_found += 1
 				else:
 					unrecognized_files.append(filename)
+			else:
+				print('Skipping, no video file')
 	print('\nOrganizing media library finished.')
 	print('Total video files encountered:	' + str(videos_total))
-	print('TV-shows found and moved:		' + str(series_found))
+	print('TV-show found:					' + str(series_found))
 	print('Unrecognized video files:		' + str(unrecognized_files))
 
 if __name__ == "__main__": main()
