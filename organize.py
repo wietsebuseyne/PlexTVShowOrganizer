@@ -25,10 +25,12 @@ def is_video(filename):
 
 def filename_to_serie(filename, name_replacements = None):
 	global settings
+	matchingRegex = ""
 	for regex in settings['regexes']:
 		p = re.compile(regex, re.IGNORECASE)
 		m = p.match(filename)
 		if not m is None:
+			matchingRegex = regex
 			break
 	if m is None: 
 		return None
@@ -36,14 +38,16 @@ def filename_to_serie(filename, name_replacements = None):
 	season = str(m.group(3)).zfill(2)
 	episode = str(m.group(4)).zfill(2)
 	name = string.capwords(m.group(1).strip(' ._-').replace('.', ' ').replace('_', ' '))
+	extra_info = m.group(5).strip(' ._-')
 	if not name_replacements is None:
 		for r in name_replacements:
 			if r[0].lower() == name.lower():
 				name = r[1]
-	return (name, season, episode)
+	print("Regex match: " + regex)
+	return (name, season, episode, extra_info)
 
 def serie_to_str(serie):
-	return serie[0] + " - s" + serie[1] + "e" + serie[2]
+	return serie[0] + " - s" + serie[1] + "e" + serie[2] + " - " + serie[3]
 
 def move_file(serie, original_path, output_directory, copy_files = True):
 	global settings

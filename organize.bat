@@ -1,2 +1,2 @@
-@echo off
-start pythonw C:\Users\Wietse\Documents\github\PlexTVShowsOrganizer\organize.py -i D:\Downloads -o D:\Series
+python "C:\Users\Wietse\Documents\github\PlexTVShowsOrganizer\organize.py" -i "D:\Downloads\Of" -o "D:\Series"
+pause
